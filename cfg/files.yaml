@@ -4,6 +4,7 @@ dodge:
     - jtdodge_main.v
     - jtdodge_mcu.v
     - jtdodge_sound.v
+    - jtdodge_adpcm.v
     - jtdodge_video.v
 jtframe:
   - from: cpu

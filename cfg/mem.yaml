@@ -17,6 +17,10 @@ clocks:
         - cen6
         - cen3
         - cen1p5
+    # MSM5205 clock
+    - freq: 384k
+      outputs:
+        - cen_oki
     # MCU: MAME uses 4 MHz (jt63701y cen = crystal, as in jtdd)
     - freq: 4M
       outputs:
