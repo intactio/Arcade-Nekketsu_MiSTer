@@ -57,7 +57,8 @@ sdram:
     - buses:
         - name: obj
           addr_width: 18
-          data_width: 32   # gfx_sort set in Task 7
+          data_width: 32
+          gfx_sort: hhvvvv # MAME spritelayout: 4 groups of 4 pixels x 16 rows per half
 bram:
   - name: mcu
     addr_width: 14

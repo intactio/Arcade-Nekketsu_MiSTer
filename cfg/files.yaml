@@ -8,6 +8,7 @@ dodge:
     - jtdodge_video.v
     - jtdodge_scroll.v
     - jtdodge_colmix.v
+    - jtdodge_obj.v
 jtframe:
   - from: cpu
     get:
@@ -19,6 +20,7 @@ jtframe:
     get:
       - jtframe_ram.v
       - jtframe_dual_ram.v
+      - jtframe_obj_buffer.v
   - from: video
     get:
       - jtframe_vtimer.v

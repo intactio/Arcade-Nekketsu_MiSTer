@@ -154,9 +154,24 @@ jtdodge_colmix u_colmix(
     .gfx_en     ( gfx_en      )
 );
 
-// sprites: Task 7
-assign obj_pxl  = 0;
-assign obj_addr = 0;
-assign obj_cs   = 0;
+jtdodge_obj u_obj(
+    .rst        ( rst         ),
+    .clk        ( clk         ),
+    .pxl_cen    ( pxl_cen     ),
+    .hs         ( HS          ),
+    .vrender    ( vrender[7:0]),
+    .hdump      ( hdump       ),
+    .obj_pal    ( obj_pal     ),
+    .cpu_addr   ( cpu_addr[7:0] ),
+    .objram_cs  ( objram_cs   ),
+    .cpu_wrn    ( cpu_rnw     ),
+    .cpu_dout   ( cpu_dout    ),
+    .rom_cs     ( obj_cs      ),
+    .rom_addr   ( obj_addr    ),
+    .rom_data   ( obj_data    ),
+    .rom_ok     ( obj_ok      ),
+    .pxl        ( obj_pxl     ),
+    .debug_bus  ( debug_bus   )
+);
 
 endmodule
