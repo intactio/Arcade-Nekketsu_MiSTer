@@ -90,12 +90,14 @@ wire [10:0] scan_addr;
 wire [ 8:0] scrpos_d;
 wire [ 1:0] tile_pal_d, obj_pal_d;
 reg  [12:0] snap[0:31];
-wire [ 8:0] vsel = vdump<=9'd16 ? 9'd0 : vdump - 9'd16 + 9'd7;
+wire [ 8:0] vsel = vdump<=9'd15 ? 9'd0 : vdump - 9'd15 + 9'd7;
 
 // MAME draws up to the IRQ line + 16 with the registers as they were when
-// the IRQ came (update_partial(scanline+16)). So line n shows the scroll
-// and palette banks as they were at the IRQ on line 8*ceil((n-16)/8).
-// This is what splits off the title bar.
+// the IRQ came (update_partial(scanline+16), marked "pretty off" there).
+// That leaves line 24, the first sky line under the 3-row title bar, on
+// the title scroll. Here line n uses the registers as they were at the IRQ
+// on line 8*ceil((n-15)/8), so the title bar ends at line 23, on its tile
+// boundary. Everything else matches MAME.
 always @(posedge clk) begin
     if( irq_set || nmi_set ) snap[ vdump[7:3] ] <= { obj_pal, tile_pal, scrpos };
 end
