@@ -38,7 +38,7 @@ No schematics of the Super Dodge Ball board (TA-0022) are known to be public.
 | MCU (inputs, protection) | HD63701Y0 @ 4 MHz (clock unconfirmed) | `jt63701y`, running the dumped ROM |
 | FM | YM3812 | `jtopl2` |
 | ADPCM | 2 × MSM5205 | `jt5205` |
-| Video | 6 MHz pixel clock, 384 × 272 total, 256 × 238 visible | `jtframe_vtimer`, `jtframe_scroll`, own sprite engine |
+| Video | 6 MHz pixel clock, 384 × 272 total, 256 × 237 visible | `jtframe_vtimer`, `jtframe_scroll`, own sprite engine |
 | Colours | two colour PROMs, 4 bits per R/G/B | own colour mixer |
 
 ## Status
@@ -47,7 +47,7 @@ Works:
 
 - Both sets boot, pass the MCU check and play.
 - Music, sound effects and voices.
-- Background, sprites and colours. Video timing follows the line counter of the sibling Renegade board: 238 visible lines (MAME shows 240, starting 9 lines higher), and the split under the score bar comes from the game's own IRQ timing. Over the lines both show, the attract mode matches MAME pixel for pixel except the first line under the score bar, which MAME leaves on the score bar's scroll.
+- Background, sprites and colours. Video timing follows the line counter of the sibling Renegade board: 237 visible lines (MAME shows 240, starting 9 lines higher), and the split under the score bar comes from the game's own IRQ timing. Over the lines both show, the attract mode matches MAME pixel for pixel except the first line under the score bar, which MAME leaves on the score bar's scroll.
 - Double-tap to run (MCU input processing).
 - Pause (JTFRAME, `P` key).
 

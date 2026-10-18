@@ -8,8 +8,8 @@
     Renegade board (TA-0018, Super Dodge Ball's sibling): the line counter
     runs 8-255, then 232-255 with V8 set. The interrupts come from counter
     edges and the row drawn on a line is the count minus ROW_SUB: rows
-    9-246 are visible (238 lines), IRQ every 8 lines, NMI on the last
-    visible line. Date: 18-10-2026 */
+    9-245 are visible (237 lines), IRQ every 8 lines, NMI on the line
+    after the last visible one. Date: 18-10-2026 */
 
 module jtnkdodge_video(
     input              rst,
@@ -62,7 +62,9 @@ module jtnkdodge_video(
 // line, NMI on vdump 256, vblank bit from ~LVBL, events where vdump changes.
 localparam [7:0] ROW_SUB    = 8'd2;     // rows are two lines old (VF')
 localparam [8:0] VIS_FIRST  = 9'd11,    // first and last visible count (V8=0):
-                 VIS_LAST   = 9'd248;   // rows 9-246
+                 VIS_LAST   = 9'd247;   // rows 9-245. Count 248 is blank as in
+                                        // Double Dragon (VBLK from F8): the NMI
+                                        // handler rewrites the scroll mid-line there
 localparam       IRQ_BIT    = 2,        // IRQ on an edge of this counter bit:
                  IRQ_RISE   = 1,        // V2 rising, counts 12, 20, ...
                  IRQ_GATE   = 1,        // none while the vblank bit is high
@@ -92,7 +94,7 @@ assign row_s   = vcnt_s[7:0] - ROW_SUB;   // two lines ahead, for the sprite sca
 assign cnt_ver = vcnt[8] || &vcnt[7:3] || vdump==9'd0;
 assign vblank  = VBL_CNTVER ? cnt_ver_l : ~LVBL;
 
-// vdump 0 is count 8: vdump 3-240 visible
+// vdump 0 is count 8: vdump 3-239 visible
 jtframe_vtimer #(
     .V_START    ( 9'd0      ),
     // LVBL follows these one line late: VB_START is the last visible line
