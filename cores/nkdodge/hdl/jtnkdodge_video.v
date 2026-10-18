@@ -57,7 +57,7 @@ module jtnkdodge_video(
 // Line numbering as on the board. These values put the court scroll
 // write of the IRQ handler (a delay loop, then $3004 at 5 lines + 270 px)
 // in the hblank between rows 23 and 24, under the title bar, and in the
-// mirrored place when flipped (IRQ #28). MAME's spdodgeb instead: ROW_SUB
+// mirrored place when flipped (the 28th IRQ of the frame). MAME's spdodgeb instead: ROW_SUB
 // 8, counts 8-247 visible, V2 falling without gate, no IRQ on the NMI
 // line, NMI on vdump 256, vblank bit from ~LVBL, events where vdump changes.
 localparam [7:0] ROW_SUB    = 8'd2;     // rows are two lines old (VF')

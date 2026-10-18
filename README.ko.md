@@ -17,7 +17,7 @@ Technos Japan의 1987년 아케이드 게임 **Super Dodge Ball / 熱血高校�
 | `nkdodge` | Nekketsu Koukou Dodgeball Bu (일본판) | `mra/Nekketsu Koukou Dodgeball Bu (Japan).mra` |
 | `spdodgeb` | Super Dodge Ball (미국판) | `mra/Super Dodge Ball (US).mra` |
 
-부트렉 `nkdodgeb`는 지원하지 않습니다. ROM은 들어 있지 않으니, 가지고 계신 MAME 세트(`nkdodge.zip`, `spdodgeb.zip`)를 `games/mame/`에 넣어 주세요.
+부틀렉 `nkdodgeb`는 지원하지 않습니다. ROM은 들어 있지 않으니, 가지고 계신 MAME 세트(`nkdodge.zip`, `spdodgeb.zip`)를 `games/mame/`에 넣어 주세요.
 
 ## 목표: 실기(PCB)처럼 동작하기
 

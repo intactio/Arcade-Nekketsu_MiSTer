@@ -11,11 +11,10 @@
     after the hhvvvv sort one 32-bit word holds one row of one half:
     byte k = pixels 4k..4k+3, high nibble = upper plane, bit j = pixel j.
 
-    During play 40-64 entries overlap each line (unused ones included), more
-    than two SDRAM reads per sprite allow in one line. So after reset the
-    sprite ROM is copied from SDRAM to two 32K x 32 BRAMs (lower and upper
-    half), and each sprite row is then read in one clock; blank rows are
-    skipped.
+    After reset the sprite ROM is copied from SDRAM to two 32K x 32 BRAMs
+    (lower and upper half), so each sprite row is read in one clock; blank
+    rows are skipped. At most 15 entries share a visible row in play
+    (MAME, 20000 frames), well under the 32 the list holds.
 
     Pipeline as on the Renegade board, one line per stage: the line two
     before display reads sprite RAM in step with the beam (entry k at
@@ -279,7 +278,8 @@ jtframe_dual_ram #(.AW(8)) u_ram(
 
 wire [6:0] buf_q;
 // hdump 256-383 reads buffer 384-511 (-128..-1), where sprites that start
-// left of the screen are drawn, so the pixel at -1 shows at x=0
+// left of the screen are drawn (X above 248). Addresses 256-383 take the
+// right-hand overflow of sprites at X 241-248 and are never shown
 wire [8:0] rd_addr = hdump[8] ? { 2'b11, hdump[6:0] } : hdump;
 
 jtframe_obj_buffer #(

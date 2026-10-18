@@ -30,7 +30,8 @@ reg  [ 9:0] idx;
 reg  [ 3:0] nr, ng, nb;
 reg  [ 1:0] ph;
 // columns 8-247 visible (240 px), as the PCB shows: sprite parts that wrap
-// around the 8-bit line buffer stay in the blanked columns
+// around the 8-bit line buffer stay in the blanked columns. The window opens
+// one pixel early (see below); LHBL closes it after column 247
 wire        hvis = hdump >= 9'd7 && hdump < 9'd248;
 
 // resistor DAC weights from MAME's palette(): 0x0e, 0x1f, 0x43, 0x8f

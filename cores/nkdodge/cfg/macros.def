@@ -4,6 +4,8 @@ JTFRAME_RATE=57.44
 JTFRAME_BUTTONS=2
 JTFRAME_CLK24
 JTFRAME_PXLCLK=6
+# no JT logo behind the OSD (not an official jotego core)
+JTFRAME_OSD_NOLOGO
 
 # Screen parameters
 JTFRAME_COLORW=8
