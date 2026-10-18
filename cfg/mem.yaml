@@ -52,7 +52,8 @@ sdram:
     - buses:
         - name: scr
           addr_width: 18
-          data_width: 32   # gfx_sort set in Task 6
+          data_width: 32
+          gfx_sort: hhvvv  # MAME charlayout: 4 column pairs x 8 rows per tile
     - buses:
         - name: obj
           addr_width: 18

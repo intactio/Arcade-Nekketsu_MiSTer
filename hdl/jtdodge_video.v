@@ -86,26 +86,77 @@ always @(posedge clk) begin
     nmi_set <= vdump!=vdump_l && vdump==9'd256;
 end
 
+wire [10:0] scan_addr;
+wire [ 7:0] code_dout, attr_dout, code_cpu, attr_cpu;
+wire [ 8:0] scr_pxl, obj_pxl;
+
+assign vram_dout = cpu_addr[11] ? attr_cpu : code_cpu;
+
 // 4 kB video RAM: 000-7FF tile code, 800-FFF attribute
-jtframe_dual_ram #(.AW(12)) u_vram(
+jtframe_dual_ram #(.AW(11)) u_code(
     .clk0   ( clk         ),
     .data0  ( cpu_dout    ),
-    .addr0  ( cpu_addr    ),
-    .we0    ( vram_cs & ~cpu_rnw ),
-    .q0     ( vram_dout   ),
+    .addr0  ( cpu_addr[10:0] ),
+    .we0    ( vram_cs & ~cpu_rnw & ~cpu_addr[11] ),
+    .q0     ( code_cpu    ),
     .clk1   ( clk         ),
     .data1  ( 8'd0        ),
-    .addr1  ( 12'd0       ),
+    .addr1  ( scan_addr   ),
     .we1    ( 1'b0        ),
-    .q1     (             )
+    .q1     ( code_dout   )
 );
 
-// filled in by Tasks 6 and 7
-assign scr_addr = 0;
-assign scr_cs   = 0;
+jtframe_dual_ram #(.AW(11)) u_attr(
+    .clk0   ( clk         ),
+    .data0  ( cpu_dout    ),
+    .addr0  ( cpu_addr[10:0] ),
+    .we0    ( vram_cs & ~cpu_rnw & cpu_addr[11] ),
+    .q0     ( attr_cpu    ),
+    .clk1   ( clk         ),
+    .data1  ( 8'd0        ),
+    .addr1  ( scan_addr   ),
+    .we1    ( 1'b0        ),
+    .q1     ( attr_dout   )
+);
+
+jtdodge_scroll u_scroll(
+    .rst        ( rst         ),
+    .clk        ( clk         ),
+    .pxl_cen    ( pxl_cen     ),
+    .hs         ( HS          ),
+    .hdump      ( hdump       ),
+    .vdump      ( vdump       ),
+    .scrpos     ( scrpos      ),
+    .tile_pal   ( tile_pal    ),
+    .vram_addr  ( scan_addr   ),
+    .code_lsb   ( code_dout   ),
+    .attr       ( attr_dout   ),
+    .rom_addr   ( scr_addr    ),
+    .rom_cs     ( scr_cs      ),
+    .rom_data   ( scr_data    ),
+    .rom_ok     ( scr_ok      ),
+    .pxl        ( scr_pxl     ),
+    .debug_bus  ( debug_bus   )
+);
+
+jtdodge_colmix u_colmix(
+    .clk        ( clk         ),
+    .pxl_cen    ( pxl_cen     ),
+    .LHBL       ( LHBL        ),
+    .LVBL       ( LVBL        ),
+    .scr_pxl    ( scr_pxl     ),
+    .obj_pxl    ( obj_pxl     ),
+    .pal_addr   ( pal_addr    ),
+    .pal_data   ( pal_data    ),
+    .red        ( red         ),
+    .green      ( green       ),
+    .blue       ( blue        ),
+    .gfx_en     ( gfx_en      )
+);
+
+// sprites: Task 7
+assign obj_pxl  = 0;
 assign obj_addr = 0;
 assign obj_cs   = 0;
-assign pal_addr = 0;
-assign { red, green, blue } = 0;
 
 endmodule
