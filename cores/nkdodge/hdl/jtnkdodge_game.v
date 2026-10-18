@@ -17,17 +17,29 @@ wire [ 8:0] scrpos;
 wire [ 1:0] tile_pal, obj_pal;
 wire        cpu_rnw, vram_cs, objram_cs, snd_irq, flip, irq_set, nmi_set,
             vblank;
+reg         running;
 
 assign dip_flip   = flip;
 assign debug_view = 0;
 
+// JTFRAME's pause (P key) stops the main CPU and the MCU. It starts and
+// ends only on the NMI line, before the game's frame work, so the frozen
+// picture is a whole frame (stopping in the middle of the sprite RAM
+// update left half the sprites a frame behind). No IRQs while paused.
+always @(posedge clk24, posedge rst24) begin
+    if( rst24 )
+        running <= 1;
+    else if( nmi_set )
+        running <= dip_pause;
+end
+
 jtnkdodge_main u_main(
     .rst         ( rst24        ),
     .clk         ( clk24        ),
-    .cen8        ( cen8 & dip_pause ),  // JTFRAME pause (P key) stops the main CPU
-    .cen4        ( cen4 & dip_pause ),  // and the MCU
+    .cen8        ( cen8 & running ),
+    .cen4        ( cen4 & running ),
     .vblank      ( vblank       ),
-    .irq_set     ( irq_set      ),
+    .irq_set     ( irq_set & running ),
     .nmi_set     ( nmi_set      ),
 
     .joystick1   ( joystick1[5:0] ),
@@ -92,7 +104,7 @@ jtnkdodge_video u_video(
     .rst        ( rst24         ),
     .clk        ( clk24         ),
     .pxl_cen    ( pxl_cen       ),
-    .running    ( dip_pause     ),
+    .running    ( running       ),
 
     .cpu_addr   ( cpu_addr      ),
     .cpu_dout   ( cpu_dout      ),
