@@ -1,0 +1,44 @@
+<misterromdescription>
+    <name>Nekketsu Koukou Dodgeball Bu (Japan)</name>
+    <setname>nkdodge</setname>
+    <rbf>Nekketsu</rbf>
+    <mameversion>0289</mameversion>
+    <year>1987</year>
+    <manufacturer>Technos Japan</manufacturer>
+    <players>2</players>
+    <joystick>8-way</joystick>
+    <num_buttons>2</num_buttons>
+    <rotation>horizontal</rotation>
+    <resolution>15kHz</resolution>
+    <region>Japan</region>
+    <category>Sports</category>
+    <!-- Nekketsu: hobby core built on jotego's JTFRAME, not an official jotego core -->
+    <switches default="FF,FF" base="16" page_id="1" page_name="Switches">
+        <dip name="Coin A" bits="0,2" ids="4C/1C,3C/1C,2C/1C,1C/5C,1C/4C,1C/3C,1C/2C,1C/1C"/>
+        <dip name="Coin B" bits="3,5" ids="4C/1C,3C/1C,2C/1C,1C/5C,1C/4C,1C/3C,1C/2C,1C/1C"/>
+        <dip name="Demo Sounds" bits="7" ids="Off,On"/>
+        <dip name="Difficulty" bits="8,9" ids="Very Hard,Hard,Easy,Normal"/>
+        <dip name="Allow Continue" bits="10" ids="No,Yes"/>
+    </switches>
+    <buttons names="Shoot,Pass,Start,Coin,Core credits" default="A,B,Start,Select,L"/>
+    <rom index="0" zip="nkdodge.zip|spdodgeb.zip" md5="430bd0e50a6d309c6a0d9a96fe226c73">
+        <!-- maincpu 0x00000 -->
+        <part name="22j4-0.139" crc="aa674fd8"/>
+        <!-- audiocpu 0x10000 -->
+        <part name="22j5-0.33" crc="c31e264e"/>
+        <!-- adpcm 0x18000 -->
+        <part name="22j6-0.83" crc="744a26e3"/>
+        <part name="22j7-0.82" crc="2fa1de21"/>
+        <!-- text 0x38000 -->
+        <part name="tj22j4-0.121" crc="d2922b3f"/>
+        <part name="tj22j3-0.107" crc="79cd1315"/>
+        <!-- sprites 0x78000 -->
+        <part name="tj22j1-0.2" crc="9ed27a8d"/>
+        <part name="tj22j2-0.35" crc="768934f9"/>
+        <!-- mcu 0xB8000 (JTFRAME_PROM_START) -->
+        <part name="22ja-0.162" crc="7162a97b"/>
+        <!-- proms 0xBC000 -->
+        <part name="22j8-0.158" crc="c368440f"/>
+        <part name="22j9-0.159" crc="6059f401"/>
+    </rom>
+</misterromdescription>
