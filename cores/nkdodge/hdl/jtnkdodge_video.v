@@ -71,11 +71,11 @@ localparam [8:0] NMI_LINE   = 9'd240;   // vdump of count 248, where CNT_VER ris
 localparam       VBL_CNTVER = 1;        // vblank bit from CNT_VER, else ~LVBL
 localparam [8:0] H_EVENT    = 9'd368;   // the counter steps 16 px before the active area
 
-wire [8:0] vdump, vrender, hdump;
+wire [8:0] vdump, vrender, vrender1, hdump;
 reg  [8:0] vcnt_l;
 reg        cnt_ver_l;
-wire [8:0] vcnt, vcnt_r;             // { V8, V[7:0] }
-wire [7:0] row, row_r;
+wire [8:0] vcnt, vcnt_s;             // { V8, V[7:0] }
+wire [7:0] row, row_s;
 wire       cnt_ver;
 
 // vdump 0-247 is count 8-255, vdump 248-271 is count 232-255 with V8 set
@@ -84,9 +84,9 @@ function [8:0] vcount( input [8:0] line );
 endfunction
 
 assign vcnt    = vcount( vdump   );
-assign vcnt_r  = vcount( vrender );
+assign vcnt_s  = vcount( vrender1 );
 assign row     = vcnt[7:0]   - ROW_SUB;
-assign row_r   = vcnt_r[7:0] - ROW_SUB;
+assign row_s   = vcnt_s[7:0] - ROW_SUB;   // two lines ahead, for the sprite scan
 // high from count 248 to the end of the V8 lines, plus count 8 (V8
 // delayed one line on the board)
 assign cnt_ver = vcnt[8] || &vcnt[7:3] || vdump==9'd0;
@@ -111,7 +111,7 @@ jtframe_vtimer #(
     .pxl_cen ( pxl_cen      ),
     .vdump   ( vdump        ),
     .vrender ( vrender      ),
-    .vrender1(              ),
+    .vrender1( vrender1     ),
     .H       ( hdump        ),
     .Hinit   (              ),
     .Vinit   (              ),
@@ -226,7 +226,8 @@ jtnkdodge_obj u_obj(
     .clk        ( clk         ),
     .pxl_cen    ( pxl_cen     ),
     .hs         ( HS          ),
-    .vrender    ( row_r       ),
+    .vscan      ( row_s       ),
+    .line_lsb   ( vdump[0]    ),
     .hdump      ( hdump       ),
     .obj_pal    ( obj_pal_v   ),
     .cpu_addr   ( cpu_addr[7:0] ),

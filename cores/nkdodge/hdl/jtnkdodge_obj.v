@@ -15,7 +15,13 @@
     than two SDRAM reads per sprite allow in one line. So after reset the
     sprite ROM is copied from SDRAM to two 32K x 32 BRAMs (lower and upper
     half), and each sprite row is then read in one clock; blank rows are
-    skipped. Date: 18-10-2026 */
+    skipped.
+
+    Pipeline as on the Renegade board, one line per stage: the line two
+    before display reads sprite RAM in step with the beam (entry k at
+    board H 4k..4k+3, board H = hdump+16) and lists the entries on that
+    row, 32 at most like the board's match RAM; the next line draws the
+    list into the line buffer; the line after shows it. Date: 18-10-2026 */
 
 module jtnkdodge_obj(
     input              rst,
@@ -23,7 +29,8 @@ module jtnkdodge_obj(
     input              pxl_cen,
 
     input              hs,
-    input      [ 7:0]  vrender,
+    input      [ 7:0]  vscan,       // row shown two lines later
+    input              line_lsb,    // vdump[0], selects the list
     input      [ 8:0]  hdump,
     input      [ 1:0]  obj_pal,
 
@@ -47,31 +54,39 @@ localparam [8:0] XOFFSET = 9'h1ff;
 
 wire        vram_we;
 wire [ 7:0] scan_dout;
-wire [ 7:0] scan_addr;
-reg  [ 5:0] obj_cnt;
+wire [ 8:0] scan_h;
 wire [ 6:0] buf_din;
-reg  [ 7:0] x, y, ydiff;
+reg  [ 7:0] x, sy, sydiff;
+reg  [ 4:0] ydiff;
 reg  [ 8:0] buf_addr;
-reg  [ 2:0] dr_pal, pal;
-reg  [ 2:0] st;
-reg         tall, dr_hflip, hflip, done, dr_busy, x_new,
-            inzone, dr_start, dr_rd, dr_load;
+reg  [ 2:0] dr_pal, pal, s_pal;
+reg         tall, dr_hflip, hflip, dr_busy, inzone, dr_start, dr_rd, dr_load,
+            s_tall, s_hflip, rd_busy, rd_valid, list_we;
 reg  [10:0] code;
+reg  [ 2:0] s_code;
+reg  [ 7:0] s_codel;
+reg  [ 5:0] list_cnt0, list_cnt1, rd_idx;
+reg  [ 4:0] list_wa;
+reg  [28:0] list_din;
+wire [28:0] list_dout;
+wire [ 5:0] wr_cnt = line_lsb ? list_cnt1 : list_cnt0;
+wire [ 5:0] rd_cnt = line_lsb ? list_cnt0 : list_cnt1;
 reg  [14:0] dr_row;      // { code, row } in the BRAMs
 reg  [ 3:0] pxl_cnt;
 reg  [63:0] pxl_data;    // { plane3, plane2, plane1, plane0 } x 16 pixels
 wire [31:0] lo_q, hi_q;
 wire        buf_we, dr_free;
 
-assign scan_addr = { obj_cnt, st[1:0] };
 assign vram_we   = objram_cs & ~cpu_wrn;
 assign dr_free   = !( dr_busy || dr_start || dr_rd || dr_load );
+// board H: 0 at hdump 368, 16 px before the active area
+assign scan_h    = hdump >= 9'd368 ? hdump - 9'd368 : hdump + 9'd16;
 
-// the line where the sprite's bottom tile starts is 240-Y, so a line is
-// in the sprite when (line + Y) mod 256 is in F0-FF (E0-FF if tall)
+// the row where the sprite's bottom tile starts is 240-Y, so a row is
+// in the sprite when (row + Y) mod 256 is in F0-FF (E0-FF if tall)
 always @* begin
-    ydiff  = vrender + y;
-    inzone = &ydiff[7:5] && (tall || ydiff[4]);
+    sydiff = vscan + sy;
+    inzone = &sydiff[7:5] && (s_tall || sydiff[4]);
 end
 
 //////////////////////////////////////////////////////////////
@@ -126,36 +141,73 @@ jtframe_dual_ram #(.DW(32),.AW(15)) u_hi(
 );
 
 //////////////////////////////////////////////////////////////
-// line scan, one step per clock. scan_dout follows scan_addr one clock
-// later, so byte n of an entry arrives in state n+1 (X in state 4)
+// scan: the sprite RAM address is board H, one byte per pixel during
+// board H 0-255. scan_dout follows the address well within the pixel.
 always @(posedge clk, posedge rst) begin
     if( rst ) begin
-        st       <= 0;
-        done     <= 0;
-        obj_cnt  <= 0;
-        dr_start <= 0;
-        x_new    <= 0;
+        list_we   <= 0;
+        list_cnt0 <= 0;
+        list_cnt1 <= 0;
     end else begin
-        dr_start <= 0;
-        x_new    <= st==3;
-        if( x_new ) x <= scan_dout;     // first clock of state 4 only
-        if( hs || copying ) begin
-            st       <= 0;
-            obj_cnt  <= 0;
-            done     <= 0;
-        end else if( !done ) begin
-            if( st != 4 ) st <= st+3'd1;
-            case( st )
-                1: y <= scan_dout;
-                2: { tall, hflip, pal, code[10:8] } <= { scan_dout[7], ~scan_dout[6], scan_dout[5:0] };
-                3: code[7:0] <= scan_dout;
-                4: if( !x_new && (!inzone || dr_free) ) begin
-                    st       <= 0;
-                    dr_start <= inzone;
-                    obj_cnt  <= obj_cnt + 1'd1;
-                    done     <= &obj_cnt;
+        list_we <= 0;
+        if( pxl_cen && !scan_h[8] ) begin
+            if( scan_h==0 ) begin
+                if( line_lsb ) list_cnt1 <= 0; else list_cnt0 <= 0;
+            end
+            case( scan_h[1:0] )
+                0: sy <= scan_dout;
+                1: { s_tall, s_hflip, s_pal, s_code } <= { scan_dout[7], ~scan_dout[6], scan_dout[5:0] };
+                2: s_codel <= scan_dout;
+                3: if( inzone && !wr_cnt[5] && !copying ) begin
+                    list_we  <= 1;
+                    list_wa  <= wr_cnt[4:0];
+                    list_din <= { sydiff[4:0], s_tall, s_hflip, s_pal, s_code, s_codel, scan_dout };
+                    if( line_lsb ) list_cnt1 <= list_cnt1 + 1'd1;
+                    else           list_cnt0 <= list_cnt0 + 1'd1;
                 end
             endcase
+        end
+    end
+end
+
+// the list written on one line is drawn on the next
+jtframe_dual_ram #(.DW(29),.AW(6)) u_list(
+    .clk0   ( clk         ),
+    .data0  ( list_din    ),
+    .addr0  ( { line_lsb, list_wa } ),
+    .we0    ( list_we     ),
+    .q0     (             ),
+
+    .clk1   ( clk         ),
+    .data1  ( 29'd0       ),
+    .addr1  ( { ~line_lsb, rd_idx[4:0] } ),
+    .we1    ( 1'b0        ),
+    .q1     ( list_dout   )
+);
+
+// hand the entries to the drawing engine one at a time
+always @(posedge clk, posedge rst) begin
+    if( rst ) begin
+        rd_idx   <= 0;
+        rd_busy  <= 0;
+        rd_valid <= 0;
+        dr_start <= 0;
+    end else begin
+        dr_start <= 0;
+        if( hs || copying ) begin
+            rd_idx   <= 0;
+            rd_busy  <= 0;
+            rd_valid <= 0;
+        end else if( !rd_busy ) begin
+            rd_busy  <= rd_idx < rd_cnt;    // the address is set, data next clock
+            rd_valid <= 0;
+        end else if( !rd_valid ) begin
+            rd_valid <= 1;
+            { ydiff, tall, hflip, pal, code, x } <= list_dout;
+        end else if( dr_free ) begin
+            dr_start <= 1;
+            rd_idx   <= rd_idx + 1'd1;
+            rd_busy  <= 0;
         end
     end
 end
@@ -220,7 +272,7 @@ jtframe_dual_ram #(.AW(8)) u_ram(
 
     .clk1   ( clk         ),
     .data1  ( 8'd0        ),
-    .addr1  ( scan_addr   ),
+    .addr1  ( scan_h[7:0] ),
     .we1    ( 1'b0        ),
     .q1     ( scan_dout   )
 );
