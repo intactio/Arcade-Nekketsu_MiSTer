@@ -4,9 +4,13 @@
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Video timing as MAME's spdodgeb: 6 MHz, 384 x 272, lines 0-239 visible.
-    IRQ request on lines 0, 8, ... 248, 264; NMI on line 256.
-    Date: 18-10-2026 */
+    Video timing: 6 MHz, 384 x 272. Lines are numbered as on the
+    Renegade board (TA-0018, Super Dodge Ball's sibling): the line counter
+    runs 8-255, then 232-255 with V8 set. The interrupts come from counter
+    edges and the row drawn on a line is the count minus ROW_SUB. The
+    parameter defaults reproduce MAME's spdodgeb (rows 0-239 on lines
+    0-239, IRQ on lines 0, 8, ... 248, 264, NMI on line 256); the Renegade
+    values are noted next to them. Date: 18-10-2026 */
 
 module jtnkdodge_video(
     input              rst,
@@ -41,6 +45,7 @@ module jtnkdodge_video(
     output             HS,
     output             VS,
     output             LVBL,
+    output             vblank,     // IN0 bit 0
     output             LHBL,
     output     [7:0]   red,
     output     [7:0]   green,
@@ -49,14 +54,46 @@ module jtnkdodge_video(
     input      [7:0]   debug_bus
 );
 
+// line numbering. Renegade: rows are two lines old (VF'), lines 11-248
+// visible, IRQ on V3 rising, NMI and the vblank bit from CNT_VER
+localparam [7:0] ROW_SUB    = 8'd8;     // Renegade: 2
+localparam [8:0] VIS_FIRST  = 9'd8,     // first and last visible count (V8=0)
+                 VIS_LAST   = 9'd247;   // Renegade: 11, 248
+localparam       IRQ_BIT    = 2,        // IRQ on an edge of this counter bit,
+                 IRQ_RISE   = 0;        // falling: V2 falls every 8 lines
+localparam       IRQ_ON_NMI = 0;        // 0: no IRQ on the NMI line (MAME)
+localparam [8:0] NMI_LINE   = 9'd256;   // vdump. Renegade: 240, CNT_VER rising
+localparam       VBL_CNTVER = 0;        // vblank bit from CNT_VER (Renegade), else ~LVBL
+
 wire [8:0] vdump, vrender, hdump;
 reg  [8:0] vdump_l;
+wire [8:0] vcnt, vcnt_l, vcnt_r;     // { V8, V[7:0] }
+wire [7:0] row, row_r;
+wire       cnt_ver;
 
-// lines 0-239 visible, as MAME's set_raw(6M, 384, 0, 256, 272, 0, 240)
+// vdump 0-247 is count 8-255, vdump 248-271 is count 232-255 with V8 set
+function [8:0] vcount( input [8:0] line );
+    vcount = line < 9'd248 ? { 1'b0, line[7:0]+8'd8 } : { 1'b1, line[7:0]-8'd16 };
+endfunction
+
+assign vcnt    = vcount( vdump   );
+assign vcnt_l  = vcount( vdump_l );
+assign vcnt_r  = vcount( vrender );
+assign row     = vcnt[7:0]   - ROW_SUB;
+assign row_r   = vcnt_r[7:0] - ROW_SUB;
+// high from count 248 to the end of the V8 lines, plus count 8 (V8
+// delayed one line on the board)
+assign cnt_ver = vcnt[8] || &vcnt[7:3] || vdump==9'd0;
+assign vblank  = VBL_CNTVER ? cnt_ver : ~LVBL;
+
+// vdump 0 is count 8. With the defaults lines 0-239 are visible, as
+// MAME's set_raw(6M, 384, 0, 256, 272, 0, 240)
 jtframe_vtimer #(
     .V_START    ( 9'd0      ),
-    .VB_START   ( 9'd239    ),  // LVBL follows these one line late:
-    .VB_END     ( 9'd271    ),  // lines 0-239 visible (checked on the device)
+    // LVBL follows these one line late: VB_START is the last visible line
+    // and VB_END the line before the first one (checked on the device)
+    .VB_START   ( VIS_LAST-9'd8 ),
+    .VB_END     ( VIS_FIRST==9'd8 ? 9'd271 : VIS_FIRST-9'd9 ),
     .VS_START   ( 9'd252    ),
     .VCNT_END   ( 9'd271    ),
     .HB_START   ( 9'd256    ),
@@ -82,8 +119,9 @@ jtframe_vtimer #(
 // one clk pulse when a new line starts
 always @(posedge clk) begin
     vdump_l <= vdump;
-    irq_set <= vdump!=vdump_l && vdump[2:0]==0 && vdump!=9'd256;
-    nmi_set <= vdump!=vdump_l && vdump==9'd256;
+    irq_set <= vdump!=vdump_l && vcnt[IRQ_BIT]!=vcnt_l[IRQ_BIT]
+            && vcnt[IRQ_BIT]==IRQ_RISE[0] && (IRQ_ON_NMI[0] || vdump!=NMI_LINE);
+    nmi_set <= vdump!=vdump_l && vdump==NMI_LINE;
 end
 
 wire [10:0] scan_addr;
@@ -140,7 +178,7 @@ jtnkdodge_scroll u_scroll(
     .pxl_cen    ( pxl_cen     ),
     .hs         ( HS          ),
     .hdump      ( hdump       ),
-    .vdump      ( vdump       ),
+    .vdump      ( { 1'b0, row } ),
     .scrpos     ( scrpos_d    ),
     .tile_pal   ( tile_pal_d  ),
     .vram_addr  ( scan_addr   ),
@@ -175,7 +213,7 @@ jtnkdodge_obj u_obj(
     .clk        ( clk         ),
     .pxl_cen    ( pxl_cen     ),
     .hs         ( HS          ),
-    .vrender    ( vrender[7:0]),
+    .vrender    ( row_r       ),
     .hdump      ( hdump       ),
     .obj_pal    ( obj_pal_d   ),
     .cpu_addr   ( cpu_addr[7:0] ),

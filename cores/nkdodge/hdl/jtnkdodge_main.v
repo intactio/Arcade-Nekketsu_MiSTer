@@ -14,9 +14,9 @@ module jtnkdodge_main(
     input              clk,        // 24 MHz
     input              cen8,       // 4x the 2 MHz bus clock
     input              cen4,       // MCU clock
-    input              LVBL,
-    input              irq_set,    // 8-line IRQ request (one clk pulse)
-    input              nmi_set,    // vblank NMI request (one clk pulse)
+    input              vblank,     // IN0 bit 0, active high
+    input              irq_set,    // IRQ request (one clk pulse)
+    input              nmi_set,    // NMI request (one clk pulse)
     // cabinet I/O (all active low, as JTFRAME delivers them)
     input       [ 5:0] joystick1,
     input       [ 5:0] joystick2,
@@ -103,7 +103,7 @@ end
 always @(posedge clk) begin
     case( cpu_addr[0] )
         // IN0: vblank, MCU busy, unused, coins, service, difficulty DIP
-        0: cab_dout <= { dipsw[9:8], service, coin[1:0], 1'b1, mcu_busy, ~LVBL };
+        0: cab_dout <= { dipsw[9:8], service, coin[1:0], 1'b1, mcu_busy, vblank };
         1: cab_dout <= dipsw[7:0];
     endcase
 end

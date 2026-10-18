@@ -15,7 +15,8 @@ wire [11:0] cpu_addr;
 wire [ 7:0] cpu_dout, vram_dout, snd_latch;
 wire [ 8:0] scrpos;
 wire [ 1:0] tile_pal, obj_pal;
-wire        cpu_rnw, vram_cs, objram_cs, snd_irq, flip, irq_set, nmi_set;
+wire        cpu_rnw, vram_cs, objram_cs, snd_irq, flip, irq_set, nmi_set,
+            vblank;
 
 assign dip_flip   = flip;
 assign debug_view = 0;
@@ -25,7 +26,7 @@ jtnkdodge_main u_main(
     .clk         ( clk24        ),
     .cen8        ( cen8 & dip_pause ),  // JTFRAME pause (P key) stops the main CPU
     .cen4        ( cen4 & dip_pause ),  // and the MCU
-    .LVBL        ( LVBL         ),
+    .vblank      ( vblank       ),
     .irq_set     ( irq_set      ),
     .nmi_set     ( nmi_set      ),
 
@@ -120,6 +121,7 @@ jtnkdodge_video u_video(
     .HS         ( HS            ),
     .VS         ( VS            ),
     .LVBL       ( LVBL          ),
+    .vblank     ( vblank        ),
     .LHBL       ( LHBL          ),
     .red        ( red           ),
     .green      ( green         ),
