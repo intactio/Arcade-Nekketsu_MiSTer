@@ -199,7 +199,9 @@ jtnkdodge_mcu u_mcu(
     .busy       ( mcu_busy      ),
     .p1         ( { start[1], start[0], joystick1[5:4], joystick1[2], joystick1[3], joystick1[1:0] } ),
     .p2         ( { 2'b11,              joystick2[5:4], joystick2[2], joystick2[3], joystick2[1:0] } ),
-    // IN1: b2 allow continue, b1 unknown DIP, other bits unused (high; b3 low would halt the MCU)
+    // IN1: b1 allow continue (MAME: "Unknown"; the main CPU tests it at FCFB),
+    // b2 "Allow Continue" in MAME but dropped by the MCU, other bits unused
+    // (high; b3 low would halt the MCU)
     .in1        ( { 5'h1f, dipsw[10], dipsw[11], 1'b1 } ),
     .rom_addr   ( mcu_addr      ),
     .rom_data   ( mcu_data      )
