@@ -23,8 +23,8 @@ assign debug_view = 0;
 jtdodge_main u_main(
     .rst         ( rst24        ),
     .clk         ( clk24        ),
-    .cen8        ( cen8         ),
-    .cen4        ( cen4         ),
+    .cen8        ( cen8 & dip_pause ),  // JTFRAME pause (P key) stops the main CPU
+    .cen4        ( cen4 & dip_pause ),  // and the MCU
     .LVBL        ( LVBL         ),
     .irq_set     ( irq_set      ),
     .nmi_set     ( nmi_set      ),
