@@ -8,8 +8,8 @@
     Renegade board (TA-0018, Super Dodge Ball's sibling): the line counter
     runs 8-255, then 232-255 with V8 set. The interrupts come from counter
     edges and the row drawn on a line is the count minus ROW_SUB: rows
-    9-245 are visible (237 lines), IRQ every 8 lines, NMI on the line
-    after the last visible one. Date: 18-10-2026 */
+    9-245 and columns 8-247 are visible (240 x 237), IRQ every 8 lines,
+    NMI on the line after the last visible one. Date: 18-10-2026 */
 
 module jtnkdodge_video(
     input              rst,
@@ -103,8 +103,8 @@ jtframe_vtimer #(
     .VB_END     ( VIS_FIRST==9'd8 ? 9'd271 : VIS_FIRST-9'd9 ),
     .VS_START   ( 9'd252    ),
     .VCNT_END   ( 9'd271    ),
-    .HB_START   ( 9'd256    ),
-    .HB_END     ( 9'd0      ),
+    .HB_START   ( 9'd248    ),  // columns 8-247 visible
+    .HB_END     ( 9'd8      ),
     .HS_START   ( 9'd303    ),
     .HS_END     ( 9'd303+9'd32 ),
     .HCNT_END   ( 9'd383    )
