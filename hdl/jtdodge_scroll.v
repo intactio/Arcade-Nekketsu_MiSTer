@@ -32,8 +32,8 @@ module jtdodge_scroll(
 );
 
 // MAME scrolls by the register + 5; the tilemap shows its data 8 pixels
-// after the fetch. Checked against MAME frames in Task 6.
-localparam [8:0] HOFFSET = 9'd5 + 9'd8;
+// after the fetch; +2 more measured against MAME's warning screen.
+localparam [8:0] HOFFSET = 9'd5 + 9'd8 + 9'd2;
 
 wire [10:0] map_addr;
 wire [31:0] planar;
@@ -61,6 +61,7 @@ jtframe_scroll #(
     .MAP_HW     ( 9         ),
     .MAP_VW     ( 8         ),
     .HJUMP      ( 0         ),
+    .HLOOP      ( 255       ),  // hdump 256-383 counts as -128..-1, so the first tile is fetched in time
     .LATCH_SCRX ( 1         )   // a new scroll value applies from the next line
 ) u_scroll(
     .rst        ( rst       ),

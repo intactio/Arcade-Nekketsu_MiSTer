@@ -42,9 +42,9 @@ module jtdodge_video(
     output             VS,
     output             LVBL,
     output             LHBL,
-    output     [3:0]   red,
-    output     [3:0]   green,
-    output     [3:0]   blue,
+    output     [7:0]   red,
+    output     [7:0]   green,
+    output     [7:0]   blue,
     input      [3:0]   gfx_en,
     input      [7:0]   debug_bus
 );
@@ -55,8 +55,8 @@ reg  [8:0] vdump_l;
 // lines 0-239 visible, as MAME's set_raw(6M, 384, 0, 256, 272, 0, 240)
 jtframe_vtimer #(
     .V_START    ( 9'd0      ),
-    .VB_START   ( 9'd240    ),
-    .VB_END     ( 9'd0      ),
+    .VB_START   ( 9'd239    ),  // LVBL follows these one line late:
+    .VB_END     ( 9'd271    ),  // lines 0-239 visible (checked on the device)
     .VS_START   ( 9'd252    ),
     .VCNT_END   ( 9'd271    ),
     .HB_START   ( 9'd256    ),
@@ -87,6 +87,19 @@ always @(posedge clk) begin
 end
 
 wire [10:0] scan_addr;
+wire [ 8:0] scrpos_d;
+wire [ 1:0] tile_pal_d, obj_pal_d;
+reg  [12:0] snap[0:31];
+wire [ 8:0] vsel = vdump<=9'd16 ? 9'd0 : vdump - 9'd16 + 9'd7;
+
+// MAME draws up to the IRQ line + 16 with the registers as they were when
+// the IRQ came (update_partial(scanline+16)). So line n shows the scroll
+// and palette banks as they were at the IRQ on line 8*ceil((n-16)/8).
+// This is what splits off the title bar.
+always @(posedge clk) begin
+    if( irq_set || nmi_set ) snap[ vdump[7:3] ] <= { obj_pal, tile_pal, scrpos };
+end
+assign { obj_pal_d, tile_pal_d, scrpos_d } = snap[ vsel[7:3] ];
 wire [ 7:0] code_dout, attr_dout, code_cpu, attr_cpu;
 wire [ 8:0] scr_pxl, obj_pxl;
 
@@ -126,8 +139,8 @@ jtdodge_scroll u_scroll(
     .hs         ( HS          ),
     .hdump      ( hdump       ),
     .vdump      ( vdump       ),
-    .scrpos     ( scrpos      ),
-    .tile_pal   ( tile_pal    ),
+    .scrpos     ( scrpos_d    ),
+    .tile_pal   ( tile_pal_d  ),
     .vram_addr  ( scan_addr   ),
     .code_lsb   ( code_dout   ),
     .attr       ( attr_dout   ),
@@ -143,6 +156,7 @@ jtdodge_colmix u_colmix(
     .clk        ( clk         ),
     .pxl_cen    ( pxl_cen     ),
     .LHBL       ( LHBL        ),
+    .hdump      ( hdump       ),
     .LVBL       ( LVBL        ),
     .scr_pxl    ( scr_pxl     ),
     .obj_pxl    ( obj_pxl     ),
@@ -161,7 +175,7 @@ jtdodge_obj u_obj(
     .hs         ( HS          ),
     .vrender    ( vrender[7:0]),
     .hdump      ( hdump       ),
-    .obj_pal    ( obj_pal     ),
+    .obj_pal    ( obj_pal_d   ),
     .cpu_addr   ( cpu_addr[7:0] ),
     .objram_cs  ( objram_cs   ),
     .cpu_wrn    ( cpu_rnw     ),

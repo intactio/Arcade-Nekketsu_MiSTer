@@ -36,8 +36,9 @@ module jtdodge_obj(
 );
 
 // MAME's X is the left edge on screen; the line buffer is read with hdump.
-// Checked against MAME frames in Task 7.
-localparam [8:0] XOFFSET = 9'd0;
+// -1 measured against MAME attract frames on the device (sprites were one
+// pixel to the right).
+localparam [8:0] XOFFSET = 9'h1ff;
 
 wire        vram_we;
 wire [ 7:0] scan_dout;
@@ -178,6 +179,9 @@ jtframe_dual_ram #(.AW(8)) u_ram(
 );
 
 wire [6:0] buf_q;
+// hdump 256-383 reads buffer 384-511 (-128..-1), where sprites that start
+// left of the screen are drawn, so the pixel at -1 shows at x=0
+wire [8:0] rd_addr = hdump[8] ? { 2'b11, hdump[6:0] } : hdump;
 
 jtframe_obj_buffer #(
     .DW     ( 7     ),
@@ -193,7 +197,7 @@ jtframe_obj_buffer #(
     .wr_addr( buf_addr  ),
     .we     ( buf_we    ),
     // Old data reads (and erases)
-    .rd_addr( hdump     ),
+    .rd_addr( rd_addr   ),
     .rd     ( pxl_cen   ),
     .rd_data( buf_q     )
 );
