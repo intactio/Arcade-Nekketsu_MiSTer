@@ -92,6 +92,7 @@ jtnkdodge_video u_video(
     .rst        ( rst24         ),
     .clk        ( clk24         ),
     .pxl_cen    ( pxl_cen       ),
+    .running    ( dip_pause     ),
 
     .cpu_addr   ( cpu_addr      ),
     .cpu_dout   ( cpu_dout      ),

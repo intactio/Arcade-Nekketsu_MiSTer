@@ -7,15 +7,15 @@
     Video timing: 6 MHz, 384 x 272. Lines are numbered as on the
     Renegade board (TA-0018, Super Dodge Ball's sibling): the line counter
     runs 8-255, then 232-255 with V8 set. The interrupts come from counter
-    edges and the row drawn on a line is the count minus ROW_SUB. The
-    parameter defaults reproduce MAME's spdodgeb (rows 0-239 on lines
-    0-239, IRQ on lines 0, 8, ... 248, 264, NMI on line 256); the Renegade
-    values are noted next to them. Date: 18-10-2026 */
+    edges and the row drawn on a line is the count minus ROW_SUB: rows
+    9-246 are visible (238 lines), IRQ every 8 lines, NMI on the last
+    visible line. Date: 18-10-2026 */
 
 module jtnkdodge_video(
     input              rst,
     input              clk,
     input              pxl_cen,
+    input              running,    // low while JTFRAME's pause stops the CPU
     // CPU
     input      [11:0]  cpu_addr,
     input      [ 7:0]  cpu_dout,
@@ -54,20 +54,27 @@ module jtnkdodge_video(
     input      [7:0]   debug_bus
 );
 
-// line numbering. Renegade: rows are two lines old (VF'), lines 11-248
-// visible, IRQ on V3 rising, NMI and the vblank bit from CNT_VER
-localparam [7:0] ROW_SUB    = 8'd8;     // Renegade: 2
-localparam [8:0] VIS_FIRST  = 9'd8,     // first and last visible count (V8=0)
-                 VIS_LAST   = 9'd247;   // Renegade: 11, 248
-localparam       IRQ_BIT    = 2,        // IRQ on an edge of this counter bit,
-                 IRQ_RISE   = 0;        // falling: V2 falls every 8 lines
-localparam       IRQ_ON_NMI = 0;        // 0: no IRQ on the NMI line (MAME)
-localparam [8:0] NMI_LINE   = 9'd256;   // vdump. Renegade: 240, CNT_VER rising
-localparam       VBL_CNTVER = 0;        // vblank bit from CNT_VER (Renegade), else ~LVBL
+// Line numbering as on the board. These values put the court scroll
+// write of the IRQ handler (a delay loop, then $3004 at 5 lines + 270 px)
+// in the hblank between rows 23 and 24, under the title bar, and in the
+// mirrored place when flipped (IRQ #28). MAME's spdodgeb instead: ROW_SUB
+// 8, counts 8-247 visible, V2 falling without gate, no IRQ on the NMI
+// line, NMI on vdump 256, vblank bit from ~LVBL, events where vdump changes.
+localparam [7:0] ROW_SUB    = 8'd2;     // rows are two lines old (VF')
+localparam [8:0] VIS_FIRST  = 9'd11,    // first and last visible count (V8=0):
+                 VIS_LAST   = 9'd248;   // rows 9-246
+localparam       IRQ_BIT    = 2,        // IRQ on an edge of this counter bit:
+                 IRQ_RISE   = 1,        // V2 rising, counts 12, 20, ...
+                 IRQ_GATE   = 1,        // none while the vblank bit is high
+                 IRQ_ON_NMI = 1;        // IRQ and NMI are separate flip-flops
+localparam [8:0] NMI_LINE   = 9'd240;   // vdump of count 248, where CNT_VER rises
+localparam       VBL_CNTVER = 1;        // vblank bit from CNT_VER, else ~LVBL
+localparam [8:0] H_EVENT    = 9'd368;   // the counter steps 16 px before the active area
 
 wire [8:0] vdump, vrender, hdump;
-reg  [8:0] vdump_l;
-wire [8:0] vcnt, vcnt_l, vcnt_r;     // { V8, V[7:0] }
+reg  [8:0] vcnt_l;
+reg        cnt_ver_l;
+wire [8:0] vcnt, vcnt_r;             // { V8, V[7:0] }
 wire [7:0] row, row_r;
 wire       cnt_ver;
 
@@ -77,17 +84,15 @@ function [8:0] vcount( input [8:0] line );
 endfunction
 
 assign vcnt    = vcount( vdump   );
-assign vcnt_l  = vcount( vdump_l );
 assign vcnt_r  = vcount( vrender );
 assign row     = vcnt[7:0]   - ROW_SUB;
 assign row_r   = vcnt_r[7:0] - ROW_SUB;
 // high from count 248 to the end of the V8 lines, plus count 8 (V8
 // delayed one line on the board)
 assign cnt_ver = vcnt[8] || &vcnt[7:3] || vdump==9'd0;
-assign vblank  = VBL_CNTVER ? cnt_ver : ~LVBL;
+assign vblank  = VBL_CNTVER ? cnt_ver_l : ~LVBL;
 
-// vdump 0 is count 8. With the defaults lines 0-239 are visible, as
-// MAME's set_raw(6M, 384, 0, 256, 272, 0, 240)
+// vdump 0 is count 8: vdump 3-240 visible
 jtframe_vtimer #(
     .V_START    ( 9'd0      ),
     // LVBL follows these one line late: VB_START is the last visible line
@@ -116,30 +121,38 @@ jtframe_vtimer #(
     .VS      ( VS           )
 );
 
-// one clk pulse when a new line starts
+// the counter steps at H_EVENT; vdump already holds the new line there.
+// irq_set and nmi_set are one clk pulses
 always @(posedge clk) begin
-    vdump_l <= vdump;
-    irq_set <= vdump!=vdump_l && vcnt[IRQ_BIT]!=vcnt_l[IRQ_BIT]
-            && vcnt[IRQ_BIT]==IRQ_RISE[0] && (IRQ_ON_NMI[0] || vdump!=NMI_LINE);
-    nmi_set <= vdump!=vdump_l && vdump==NMI_LINE;
+    irq_set <= 0;
+    nmi_set <= 0;
+    if( pxl_cen && hdump==H_EVENT ) begin
+        vcnt_l    <= vcnt;
+        cnt_ver_l <= cnt_ver;
+        irq_set   <= vcnt[IRQ_BIT]!=vcnt_l[IRQ_BIT] && vcnt[IRQ_BIT]==IRQ_RISE[0]
+                  && !(IRQ_GATE[0] && cnt_ver) && (IRQ_ON_NMI[0] || vdump!=NMI_LINE);
+        nmi_set   <= vdump==NMI_LINE;
+    end
 end
+
+// The scroll and palette registers are used as they are, as on the board
+// (no latch between the CPU write and the video). JTFRAME's pause stops
+// the CPU, and with it the interrupt handlers that rewrite the registers
+// for each part of the screen, so each line's values are recorded while
+// running and replayed while paused.
+reg  [12:0] line_regs[0:511];
+reg  [12:0] held;
+wire [12:0] live = { obj_pal, tile_pal, scrpos };
+wire [ 8:0] scrpos_v;
+wire [ 1:0] tile_pal_v, obj_pal_v;
+
+always @(posedge clk) if( pxl_cen ) begin
+    if( running && hdump==H_EVENT ) line_regs[vdump] <= live;
+    if( hdump==9'd304 ) held <= line_regs[vdump];  // vdump steps at 303
+end
+assign { obj_pal_v, tile_pal_v, scrpos_v } = running ? live : held;
 
 wire [10:0] scan_addr;
-wire [ 8:0] scrpos_d;
-wire [ 1:0] tile_pal_d, obj_pal_d;
-reg  [12:0] snap[0:31];
-wire [ 8:0] vsel = vdump<=9'd15 ? 9'd0 : vdump - 9'd15 + 9'd7;
-
-// MAME draws up to the IRQ line + 16 with the registers as they were when
-// the IRQ came (update_partial(scanline+16), marked "pretty off" there).
-// That leaves line 24, the first sky line under the 3-row title bar, on
-// the title scroll. Here line n uses the registers as they were at the IRQ
-// on line 8*ceil((n-15)/8), so the title bar ends at line 23, on its tile
-// boundary. Everything else matches MAME.
-always @(posedge clk) begin
-    if( irq_set || nmi_set ) snap[ vdump[7:3] ] <= { obj_pal, tile_pal, scrpos };
-end
-assign { obj_pal_d, tile_pal_d, scrpos_d } = snap[ vsel[7:3] ];
 wire [ 7:0] code_dout, attr_dout, code_cpu, attr_cpu;
 wire [ 8:0] scr_pxl, obj_pxl;
 
@@ -179,8 +192,8 @@ jtnkdodge_scroll u_scroll(
     .hs         ( HS          ),
     .hdump      ( hdump       ),
     .vdump      ( { 1'b0, row } ),
-    .scrpos     ( scrpos_d    ),
-    .tile_pal   ( tile_pal_d  ),
+    .scrpos     ( scrpos_v    ),
+    .tile_pal   ( tile_pal_v  ),
     .vram_addr  ( scan_addr   ),
     .code_lsb   ( code_dout   ),
     .attr       ( attr_dout   ),
@@ -215,7 +228,7 @@ jtnkdodge_obj u_obj(
     .hs         ( HS          ),
     .vrender    ( row_r       ),
     .hdump      ( hdump       ),
-    .obj_pal    ( obj_pal_d   ),
+    .obj_pal    ( obj_pal_v   ),
     .cpu_addr   ( cpu_addr[7:0] ),
     .objram_cs  ( objram_cs   ),
     .cpu_wrn    ( cpu_rnw     ),

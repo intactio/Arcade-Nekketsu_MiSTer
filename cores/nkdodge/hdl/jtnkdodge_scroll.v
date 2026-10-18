@@ -62,7 +62,7 @@ jtframe_scroll #(
     .MAP_VW     ( 8         ),
     .HJUMP      ( 0         ),
     .HLOOP      ( 255       ),  // hdump 256-383 counts as -128..-1, so the first tile is fetched in time
-    .LATCH_SCRX ( 1         )   // a new scroll value applies from the next line
+    .LATCH_SCRX ( 0         )   // scroll writes apply at once, as on the board
 ) u_scroll(
     .rst        ( rst       ),
     .clk        ( clk       ),
