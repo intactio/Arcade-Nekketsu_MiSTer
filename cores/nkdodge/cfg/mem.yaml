@@ -1,0 +1,70 @@
+params:
+  - name: PCM0_OFFSET
+    value: "(`PCM_START-`JTFRAME_BA1_START)>>1"
+  - name: PCM1_OFFSET
+    value: "(`PCM_START+'h10000-`JTFRAME_BA1_START)>>1"
+clocks:
+  clk24:
+    # 6502: jt65c02 takes 4x the bus clock, 2 MHz -> 8 MHz
+    - freq: 8M
+      gate: [ main ]
+      outputs:
+        - cen8
+    # sound: 6809 (jtframe_sys6809 cen as in jtkunio) and OPL2 at 3 MHz
+    - freq: 6M
+      gate: [ snd ]
+      outputs:
+        - cen6
+        - cen3
+        - cen1p5
+    # MSM5205 clock
+    - freq: 384k
+      outputs:
+        - cen_oki
+    # MCU: MAME uses 4 MHz (jt63701y cen = crystal, as in jtdd)
+    - freq: 4M
+      outputs:
+        - cen4
+audio:
+  rsum: 5k  # TBC
+  channels:
+    - { name: fm,   module: jtopl2, rsum: 2.2k }
+    - { name: pcm0, module: jt5205, rsum: 4.7k, dcrm: true }
+    - { name: pcm1, module: jt5205, rsum: 4.7k, dcrm: true }
+sdram:
+  banks:
+    - buses:
+        - name: main
+          addr_width: 16
+          data_width: 8
+    - buses:
+        - name: snd
+          addr_width: 15
+          data_width: 8
+        - name: pcm0
+          addr_width: 16
+          data_width: 8
+          offset: PCM0_OFFSET
+        - name: pcm1
+          addr_width: 16
+          data_width: 8
+          offset: PCM1_OFFSET
+    - buses:
+        - name: scr
+          addr_width: 18
+          data_width: 32
+          gfx_sort: hhvvv  # MAME charlayout: 4 column pairs x 8 rows per tile
+    - buses:
+        - name: obj
+          addr_width: 18
+          data_width: 32
+          gfx_sort: hhvvvv # MAME spritelayout: 4 groups of 4 pixels x 16 rows per half
+bram:
+  - name: mcu
+    addr_width: 14
+    data_width: 8
+    prom: true
+  - name: pal
+    addr_width: 11
+    data_width: 8
+    prom: true

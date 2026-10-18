@@ -1,0 +1,34 @@
+dodge:
+  - get:
+    - jtdodge_game.v
+    - jtdodge_main.v
+    - jtdodge_mcu.v
+    - jtdodge_sound.v
+    - jtdodge_adpcm.v
+    - jtdodge_video.v
+    - jtdodge_scroll.v
+    - jtdodge_colmix.v
+    - jtdodge_obj.v
+jtframe:
+  - from: cpu
+    get:
+      - jtframe_6809.yaml
+      - jtframe_63701y.yaml
+  - get:
+      - jtframe_ff.v
+  - from: ram
+    get:
+      - jtframe_ram.v
+      - jtframe_dual_ram.v
+      - jtframe_obj_buffer.v
+  - from: video
+    get:
+      - jtframe_vtimer.v
+      - jtframe_scroll.yaml
+jt5205:
+jtopl:
+  - get:
+    - jtopl2.yaml
+jt680x:
+  - get:
+    - jt65c02.yaml
