@@ -1,0 +1,7 @@
+# JTFRAME build output (jtcore writes it next to the core sources)
+cores/*/mister/
+cores/*/mist/
+cores/*/sidi/
+cores/*/pocket/
+cores/*/ver/
+.DS_Store

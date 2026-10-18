@@ -1,5 +1,5 @@
-/*  This file is part of JTDODGE (not an official jotego core).
-    JTDODGE program is free software: you can redistribute it and/or modify
+/*  This file is part of Nekketsu (not an official jotego core).
+    Nekketsu is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -17,7 +17,7 @@
     half), and each sprite row is then read in one clock; blank rows are
     skipped. Date: 18-10-2026 */
 
-module jtdodge_obj(
+module jtnkdodge_obj(
     input              rst,
     input              clk,
     input              pxl_cen,

@@ -1,5 +1,5 @@
-/*  This file is part of JTDODGE (not an official jotego core).
-    JTDODGE program is free software: you can redistribute it and/or modify
+/*  This file is part of Nekketsu (not an official jotego core).
+    Nekketsu is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -9,7 +9,7 @@
       0000-0FFF RAM, 1000 latch, 2800-2801 YM3812, 3800-3807 ADPCM,
       8000-FFFF ROM.  Date: 18-10-2026 */
 
-module jtdodge_sound(
+module jtnkdodge_sound(
     input                rst,
     input                clk,        // 24 MHz
     input                cen3,
@@ -118,7 +118,7 @@ jtopl2 u_opl(
 );
 
 // offset & 1 selects the chip, offset / 2 the register
-jtdodge_adpcm u_adpcm0(
+jtnkdodge_adpcm u_adpcm0(
     .clk        ( clk           ),
     .rst        ( rst           ),
     .cen_oki    ( cen_oki       ),
@@ -132,7 +132,7 @@ jtdodge_adpcm u_adpcm0(
     .snd        ( pcm0          )
 );
 
-jtdodge_adpcm u_adpcm1(
+jtnkdodge_adpcm u_adpcm1(
     .clk        ( clk           ),
     .rst        ( rst           ),
     .cen_oki    ( cen_oki       ),

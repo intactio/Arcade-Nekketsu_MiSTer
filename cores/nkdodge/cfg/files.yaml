@@ -1,14 +1,14 @@
-dodge:
+nkdodge:
   - get:
-    - jtdodge_game.v
-    - jtdodge_main.v
-    - jtdodge_mcu.v
-    - jtdodge_sound.v
-    - jtdodge_adpcm.v
-    - jtdodge_video.v
-    - jtdodge_scroll.v
-    - jtdodge_colmix.v
-    - jtdodge_obj.v
+    - jtnkdodge_game.v
+    - jtnkdodge_main.v
+    - jtnkdodge_mcu.v
+    - jtnkdodge_sound.v
+    - jtnkdodge_adpcm.v
+    - jtnkdodge_video.v
+    - jtnkdodge_scroll.v
+    - jtnkdodge_colmix.v
+    - jtnkdodge_obj.v
 jtframe:
   - from: cpu
     get:

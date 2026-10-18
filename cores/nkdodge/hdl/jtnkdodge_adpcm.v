@@ -1,5 +1,5 @@
-/*  This file is part of JTDODGE (not an official jotego core).
-    JTDODGE program is free software: you can redistribute it and/or modify
+/*  This file is part of Nekketsu (not an official jotego core).
+    Nekketsu is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -8,7 +8,7 @@
     (Jose Tejada Gomez, 2019) plus MAME's stop at the end of the 64 kB
     ROM (spdodgeb_state::adpcm_int: pos >= 0x10000). Date: 18-10-2026 */
 
-module jtdodge_adpcm(
+module jtnkdodge_adpcm(
     input               clk,
     input               rst,
     input               cen_oki,        // 384 kHz

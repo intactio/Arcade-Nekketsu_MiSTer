@@ -1,5 +1,5 @@
-/*  This file is part of JTDODGE (not an official jotego core).
-    JTDODGE program is free software: you can redistribute it and/or modify
+/*  This file is part of Nekketsu (not an official jotego core).
+    Nekketsu is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -7,7 +7,7 @@
     Super Dodge Ball / Nekketsu Koukou Dodgeball Bu (Technos, 1987).
     Built on JTFRAME and jtkunio by Jose Tejada Gomez. Date: 18-10-2026 */
 
-module jtdodge_game(
+module jtnkdodge_game(
     `include "jtframe_game_ports.inc" // see $JTFRAME/hdl/inc/jtframe_game_ports.inc
 );
 
@@ -20,7 +20,7 @@ wire        cpu_rnw, vram_cs, objram_cs, snd_irq, flip, irq_set, nmi_set;
 assign dip_flip   = flip;
 assign debug_view = 0;
 
-jtdodge_main u_main(
+jtnkdodge_main u_main(
     .rst         ( rst24        ),
     .clk         ( clk24        ),
     .cen8        ( cen8 & dip_pause ),  // JTFRAME pause (P key) stops the main CPU
@@ -59,7 +59,7 @@ jtdodge_main u_main(
     .mcu_data    ( mcu_data     )
 );
 
-jtdodge_sound u_sound(
+jtnkdodge_sound u_sound(
     .rst        ( rst24         ),
     .clk        ( clk24         ),
     .cen3       ( cen3          ),
@@ -87,7 +87,7 @@ jtdodge_sound u_sound(
     .pcm1       ( pcm1          )
 );
 
-jtdodge_video u_video(
+jtnkdodge_video u_video(
     .rst        ( rst24         ),
     .clk        ( clk24         ),
     .pxl_cen    ( pxl_cen       ),

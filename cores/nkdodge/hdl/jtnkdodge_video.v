@@ -1,5 +1,5 @@
-/*  This file is part of JTDODGE (not an official jotego core).
-    JTDODGE program is free software: you can redistribute it and/or modify
+/*  This file is part of Nekketsu (not an official jotego core).
+    Nekketsu is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -8,7 +8,7 @@
     IRQ request on lines 0, 8, ... 248, 264; NMI on line 256.
     Date: 18-10-2026 */
 
-module jtdodge_video(
+module jtnkdodge_video(
     input              rst,
     input              clk,
     input              pxl_cen,
@@ -134,7 +134,7 @@ jtframe_dual_ram #(.AW(11)) u_attr(
     .q1     ( attr_dout   )
 );
 
-jtdodge_scroll u_scroll(
+jtnkdodge_scroll u_scroll(
     .rst        ( rst         ),
     .clk        ( clk         ),
     .pxl_cen    ( pxl_cen     ),
@@ -154,7 +154,7 @@ jtdodge_scroll u_scroll(
     .debug_bus  ( debug_bus   )
 );
 
-jtdodge_colmix u_colmix(
+jtnkdodge_colmix u_colmix(
     .clk        ( clk         ),
     .pxl_cen    ( pxl_cen     ),
     .LHBL       ( LHBL        ),
@@ -170,7 +170,7 @@ jtdodge_colmix u_colmix(
     .gfx_en     ( gfx_en      )
 );
 
-jtdodge_obj u_obj(
+jtnkdodge_obj u_obj(
     .rst        ( rst         ),
     .clk        ( clk         ),
     .pxl_cen    ( pxl_cen     ),

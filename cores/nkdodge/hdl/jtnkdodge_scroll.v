@@ -1,5 +1,5 @@
-/*  This file is part of JTDODGE (not an official jotego core).
-    JTDODGE program is free software: you can redistribute it and/or modify
+/*  This file is part of Nekketsu (not an official jotego core).
+    Nekketsu is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -9,7 +9,7 @@
     code at offset, attribute at offset+0x800 (attr[4:0] code MSBs,
     attr[7:5] colour). Date: 18-10-2026 */
 
-module jtdodge_scroll(
+module jtnkdodge_scroll(
     input              rst,
     input              clk,
     input              pxl_cen,

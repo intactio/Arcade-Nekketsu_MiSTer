@@ -1,5 +1,5 @@
-/*  This file is part of JTDODGE (not an official jotego core).
-    JTDODGE program is free software: you can redistribute it and/or modify
+/*  This file is part of Nekketsu (not an official jotego core).
+    Nekketsu is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
@@ -9,7 +9,7 @@
     (the IRQ handler ends with a write to $3001, the NMI handler with a
     write to $3000). Date: 18-10-2026 */
 
-module jtdodge_main(
+module jtnkdodge_main(
     input              rst,
     input              clk,        // 24 MHz
     input              cen8,       // 4x the 2 MHz bus clock
@@ -187,7 +187,7 @@ jt65c02 u_cpu(
     .dout   ( cpu_dout  )
 );
 
-jtdodge_mcu u_mcu(
+jtnkdodge_mcu u_mcu(
     .rst        ( rst           ),
     .clk        ( clk           ),
     .cen        ( cen4          ),
