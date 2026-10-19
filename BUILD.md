@@ -4,7 +4,7 @@ The core is built inside a [jtcores](https://github.com/jotego/jtcores) checkout
 
 ## Requirements
 
-- **jtcores** at commit `f64dbe2` (2026-10-17), the version this core is built and tested with. Newer commits may work but are not tested.
+- **jtcores** at the commit in [`JTCORES_COMMIT`](JTCORES_COMMIT), the version this core is built and tested with. Newer commits may work but are not tested.
 - The tools `jtcore` uses (see jtcores' `modules/jtframe/doc/compilation.md`):
   - bash 4 or newer
   - Go 1.22 or newer (the `jtframe` tool is built on first use)
@@ -24,7 +24,7 @@ This flow is untested on Linux. The maintainer builds on macOS, where `jtcore` o
    ```sh
    git clone --recurse-submodules https://github.com/jotego/jtcores.git
    cd jtcores
-   git checkout f64dbe2
+   git checkout "$(cat <this repo>/JTCORES_COMMIT)"
    git submodule update --init --recursive
    ```
 
