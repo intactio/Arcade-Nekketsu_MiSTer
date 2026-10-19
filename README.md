@@ -14,8 +14,10 @@ This core was developed with the help of an AI coding assistant (Anthropic's Cla
 
 | MAME set | Title | MRA |
 |---|---|---|
-| `nkdodge` | Nekketsu Koukou Dodgeball Bu (Japan) | `mra/Nekketsu Koukou Dodgeball Bu (Japan).mra` |
 | `spdodgeb` | Super Dodge Ball (US) | `mra/Super Dodge Ball (US).mra` |
+| `nkdodge` | Nekketsu Koukou Dodgeball Bu (Japan) | `mra/_alternatives/_Super Dodge Ball/Nekketsu Koukou Dodgeball Bu (Japan).mra` |
+
+As in MAME, the US set is the parent and the Japanese set a clone, so the Japanese MRA sits under `_alternatives`. The `mra/` folder mirrors `_Arcade/` on the SD card.
 
 The bootleg `nkdodgeb` is not supported. ROMs are not included: put your own MAME sets (`nkdodge.zip`, `spdodgeb.zip`) in `games/mame/`.
 

@@ -14,8 +14,10 @@
 
 | MAME セット | タイトル | MRA |
 |---|---|---|
-| `nkdodge` | 熱血高校ドッジボール部（日本版） | `mra/Nekketsu Koukou Dodgeball Bu (Japan).mra` |
 | `spdodgeb` | Super Dodge Ball（米国版） | `mra/Super Dodge Ball (US).mra` |
+| `nkdodge` | 熱血高校ドッジボール部（日本版） | `mra/_alternatives/_Super Dodge Ball/Nekketsu Koukou Dodgeball Bu (Japan).mra` |
+
+MAME と同じく米国版が親セット、日本版がクローンなので、日本版の MRA は `_alternatives` の下にあります。`mra/` フォルダの構成は SD カードの `_Arcade/` と同じです。
 
 海賊版（ブートレグ）の `nkdodgeb` には対応していません。ROM は含まれていないので、お手持ちの MAME セット（`nkdodge.zip`、`spdodgeb.zip`）を `games/mame/` に置いてください。
 

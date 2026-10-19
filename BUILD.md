@@ -50,4 +50,4 @@ This flow is untested on Linux. The maintainer builds on macOS, where `jtcore` o
 
 4. Install on the MiSTer:
    - Copy the bitstream to `_Arcade/cores/Nekketsu_YYYYMMDD.rbf`. The MRAs load it through `<rbf>Nekketsu</rbf>`.
-   - Copy the MRAs from `mra/` to a folder under `_Arcade/`, for example `_Arcade/_Nekketsu/`.
+   - Copy the contents of `mra/` into `_Arcade/`: `Super Dodge Ball (US).mra` goes to `_Arcade/`, the Japanese set to `_Arcade/_alternatives/_Super Dodge Ball/`.

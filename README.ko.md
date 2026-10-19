@@ -14,8 +14,10 @@ Technos Japan의 1987년 아케이드 게임 **Super Dodge Ball / 熱血高校�
 
 | MAME 세트 | 제목 | MRA |
 |---|---|---|
-| `nkdodge` | Nekketsu Koukou Dodgeball Bu (일본판) | `mra/Nekketsu Koukou Dodgeball Bu (Japan).mra` |
 | `spdodgeb` | Super Dodge Ball (미국판) | `mra/Super Dodge Ball (US).mra` |
+| `nkdodge` | Nekketsu Koukou Dodgeball Bu (일본판) | `mra/_alternatives/_Super Dodge Ball/Nekketsu Koukou Dodgeball Bu (Japan).mra` |
+
+MAME와 마찬가지로 미국판이 parent, 일본판이 clone이라서 일본판 MRA는 `_alternatives` 아래에 있습니다. `mra/` 폴더 구조는 SD 카드의 `_Arcade/`와 같습니다.
 
 부틀렉 `nkdodgeb`는 지원하지 않습니다. ROM은 들어 있지 않으니, 가지고 계신 MAME 세트(`nkdodge.zip`, `spdodgeb.zip`)를 `games/mame/`에 넣어 주세요.
 
