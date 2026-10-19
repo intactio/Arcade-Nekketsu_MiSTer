@@ -81,6 +81,10 @@ DIP 스위치(기본값은 MRA에 들어 있고 OSD에서 바꿀 수 있음): Co
 - **MAME**: Paul Hampson과 Nicola Salmoria의 `spdodgeb` 드라이버. 참고 자료로만 썼습니다(MAME 코드는 들어 있지 않음).
 - **Technos Japan**: 원작 게임.
 
+## 후원
+
+이 코어는 무료이고 앞으로도 무료이며, 후원자 전용 기능은 없습니다. 마음에 드셨다면 [Ko-fi](https://ko-fi.com/intactio)에서 커피 한 잔을 후원해 주세요. 후원은 이 코어 개발에 대한 것이며 게임 대가가 아닙니다. ROM은 제공하지 않습니다.
+
 ## 라이선스
 
 GPLv3입니다. [LICENSE](LICENSE)를 참고하세요. jtcores에서 가져온 부분은 원래의 GPLv3 라이선스와 저작권 헤더를 그대로 유지합니다.

@@ -81,6 +81,10 @@ See [BUILD.md](BUILD.md). The core is built inside a [jtcores](https://github.co
 - **MAME**: the `spdodgeb` driver by Paul Hampson and Nicola Salmoria, used as a reference (no MAME code is included).
 - **Technos Japan**: the original game.
 
+## Support
+
+The core is free and stays free, with nothing locked behind donations. If you enjoy it, you can buy me a coffee on [Ko-fi](https://ko-fi.com/intactio). Donations support the work on this core only; they don't pay for the game, and ROMs are never provided.
+
 ## License
 
 GPLv3, see [LICENSE](LICENSE). Parts taken from jtcores keep their GPLv3 licence and copyright headers.
