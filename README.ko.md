@@ -2,6 +2,8 @@
 
 [English](README.md) · 한국어 · [日本語](README.ja.md)
 
+![MiSTer에서 실행한 熱血高校ドッジボール部 타이틀 화면](screenshots/01-title.png)
+
 Technos Japan의 1987년 아케이드 게임 **Super Dodge Ball / 熱血高校ドッジボール部**의 MiSTer FPGA 코어입니다.
 
 취미로 만든 프로젝트이며 **jotego의 공식 코어가 아닙니다.** jotego의 JTFRAME 프레임워크 위에 만들었고, 그의 Renegade와 Double Dragon 코어에서 많은 부분을 빌려 왔습니다.
@@ -20,6 +22,17 @@ Technos Japan의 1987년 아케이드 게임 **Super Dodge Ball / 熱血高校�
 MAME와 마찬가지로 미국판이 parent, 일본판이 clone이라서 일본판 MRA는 `_alternatives` 아래에 있습니다. `mra/` 폴더 구조는 SD 카드의 `_Arcade/`와 같습니다.
 
 부틀렉 `nkdodgeb`는 지원하지 않습니다. ROM은 들어 있지 않으니, 가지고 계신 MAME 세트(`nkdodge.zip`, `spdodgeb.zip`)를 `games/mame/`에 넣어 주세요.
+
+## 스크린샷
+
+일본판(`nkdodge`)을 MiSTer에서 찍은 화면이며, 게임 진행 순서대로 정리했습니다.
+
+| | |
+|---|---|
+| ![인트로: 교문 앞의 라이벌](screenshots/02-intro-school-gate.png)<br>인트로: 교문 앞의 라이벌 | ![하나조노 고교와의 첫 경기](screenshots/03-match-vs-hanazono.png)<br>하나조노 고교와의 첫 경기 |
+| ![상대 코트를 향한 슛](screenshots/04-gameplay-throw.png)<br>상대 코트를 향한 슛 | ![경기 승리](screenshots/05-gameplay-win.png)<br>경기 승리 |
+| ![신문: 세계 대회 출전](screenshots/06-newspaper.png)<br>신문: 세계 대회 출전 | ![영국으로 출발](screenshots/07-airport.png)<br>영국으로 출발 |
+| ![런던에서 펼쳐지는 일본 대 영국](screenshots/08-match-vs-england.png)<br>런던에서 펼쳐지는 일본 대 영국 |  |
 
 ## 목표: 실기(PCB)처럼 동작하기
 

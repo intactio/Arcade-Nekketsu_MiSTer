@@ -2,6 +2,8 @@
 
 [English](README.md) · [한국어](README.ko.md) · 日本語
 
+![MiSTer で動く熱血高校ドッジボール部のタイトル画面](screenshots/01-title.png)
+
 テクノスジャパンが 1987 年に発売したアーケードゲーム **熱血高校ドッジボール部 / Super Dodge Ball** の MiSTer FPGA コアです。
 
 趣味のプロジェクトで、**jotego 氏の公式コアではありません。** jotego 氏の JTFRAME フレームワークの上に作り、同氏の熱血硬派くにおくん（海外版：レネゲード）とダブルドラゴンのコアから多くを借りています。
@@ -20,6 +22,17 @@
 MAME と同じく米国版が親セット、日本版がクローンなので、日本版の MRA は `_alternatives` の下にあります。`mra/` フォルダの構成は SD カードの `_Arcade/` と同じです。
 
 海賊版（ブートレグ）の `nkdodgeb` には対応していません。ROM は含まれていないので、お手持ちの MAME セット（`nkdodge.zip`、`spdodgeb.zip`）を `games/mame/` に置いてください。
+
+## スクリーンショット
+
+日本版（`nkdodge`）を MiSTer で撮影したもので、ゲームの進む順に並べています。
+
+| | |
+|---|---|
+| ![イントロ：校門前のライバル](screenshots/02-intro-school-gate.png)<br>イントロ：校門前のライバル | ![花園高校との試合開始](screenshots/03-match-vs-hanazono.png)<br>花園高校との試合開始 |
+| ![相手コートへのシュート](screenshots/04-gameplay-throw.png)<br>相手コートへのシュート | ![試合に勝利](screenshots/05-gameplay-win.png)<br>試合に勝利 |
+| ![新聞：世界大会へ](screenshots/06-newspaper.png)<br>新聞：世界大会へ | ![イギリスへ出発](screenshots/07-airport.png)<br>イギリスへ出発 |
+| ![ロンドンでの全日本 VS イギリス](screenshots/08-match-vs-england.png)<br>ロンドンでの全日本 VS イギリス |  |
 
 ## 目標：実機（PCB）のように動くこと
 

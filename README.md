@@ -2,6 +2,8 @@
 
 English · [한국어](README.ko.md) · [日本語](README.ja.md)
 
+![Title screen of Nekketsu Koukou Dodgeball Bu running on MiSTer](screenshots/01-title.png)
+
 A MiSTer FPGA core for **Super Dodge Ball / Nekketsu Koukou Dodgeball Bu** (熱血高校ドッジボール部), the 1987 arcade game by Technos Japan.
 
 This is a hobby project. It is **not an official jotego core**, although it is built on jotego's JTFRAME framework and borrows heavily from his Renegade and Double Dragon cores.
@@ -20,6 +22,17 @@ This core was developed with the help of an AI coding assistant (Anthropic's Cla
 As in MAME, the US set is the parent and the Japanese set a clone, so the Japanese MRA sits under `_alternatives`. The `mra/` folder mirrors `_Arcade/` on the SD card.
 
 The bootleg `nkdodgeb` is not supported. ROMs are not included: put your own MAME sets (`nkdodge.zip`, `spdodgeb.zip`) in `games/mame/`.
+
+## Screenshots
+
+Taken on a MiSTer from the Japanese set (`nkdodge`), in the order the game shows them.
+
+| | |
+|---|---|
+| ![Intro: the rival at the school gate](screenshots/02-intro-school-gate.png)<br>Intro: the rival at the school gate | ![Tip-off against Hanazono High](screenshots/03-match-vs-hanazono.png)<br>Tip-off against Hanazono High |
+| ![Shooting at the opponent's court](screenshots/04-gameplay-throw.png)<br>Shooting at the opponent's court | ![Winning the match](screenshots/05-gameplay-win.png)<br>Winning the match |
+| ![Newspaper: off to the world tournament](screenshots/06-newspaper.png)<br>Newspaper: off to the world tournament | ![Flying out to England](screenshots/07-airport.png)<br>Flying out to England |
+| ![Japan vs England in London](screenshots/08-match-vs-england.png)<br>Japan vs England in London |  |
 
 ## Goal: behave like the PCB
 
