@@ -98,7 +98,7 @@ See [BUILD.md](BUILD.md). The core is built inside a [jtcores](https://github.co
 
 ## Support
 
-The core is free and stays free, with nothing locked behind donations. If you enjoy it, you can buy me a coffee on [Ko-fi](https://ko-fi.com/intactio). Donations support the work on this core only; they don't pay for the game, and ROMs are never provided.
+The core is free and stays free, with nothing locked behind tips. If you enjoy it, you can buy me a coffee on [Ko-fi](https://ko-fi.com/intactio). Tips support the work on this core only; they don't pay for the game, and ROMs are never provided.
 
 ## License
 
