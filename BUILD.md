@@ -43,8 +43,10 @@ This flow is untested on Linux. The maintainer builds on macOS, where `jtcore` o
 
    ```sh
    source setprj.sh
-   jtcore nkdodge -mister
+   jtcore nkdodge -mister --nodbg
    ```
+
+   `--nodbg` defines `JTFRAME_RELEASE`, which turns off JTFRAME's debug controls (START or COIN with the joystick changes an on-screen debug value, F7-F12 turn off graphics layers and sound channels). Leave it out only for a debug build.
 
    `jtcore` generates the Quartus project in `cores/nkdodge/mister/` and compiles it. The project is named after `CORENAME` in `cfg/macros.def`, so the bitstream is `cores/nkdodge/mister/output_files/nekketsu.rbf`.
 
